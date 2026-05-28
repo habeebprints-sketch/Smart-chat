@@ -1,41 +1,60 @@
 const API_KEY = "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";
 
-async function sendMessage(){
+async function sendMessage() {
 
   const input = document.getElementById("userInput");
   const message = input.value;
 
-  if(message === "") return;
+  if (!message) return;
 
   addMessage(message, "user");
 
   input.value = "";
 
-  const response = await fetch("https://api.openai.com/v1/chat/completions",{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "Authorization":"Bearer " + API_KEY
-    },
-    body:JSON.stringify({
-      model:"gpt-4.1-mini",
-      messages:[
-        {
-          role:"user",
-          content:message
-        }
-      ]
-    })
-  });
+  try {
 
-  const data = await response.json();
+    addMessage("Typing...", "bot");
 
-  const reply = data.choices[0].message.content;
+    const response = await fetch(
+      "https://api.openai.com/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${API_KEY}`
+        },
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo",
+          messages: [
+            {
+              role: "user",
+              content: message
+            }
+          ]
+        })
+      }
+    );
 
-  addMessage(reply, "bot");
+    const data = await response.json();
+
+    document.querySelector(".bot:last-child").remove();
+
+    if (data.error) {
+      addMessage("ERROR: " + data.error.message, "bot");
+      return;
+    }
+
+    const reply = data.choices[0].message.content;
+
+    addMessage(reply, "bot");
+
+  } catch (error) {
+
+    addMessage("FAILED: " + error.message, "bot");
+  }
 }
 
-function addMessage(text, sender){
+function addMessage(text, sender) {
 
   const chatBox = document.getElementById("chat-box");
 
