@@ -1,4 +1,4 @@
-const API_KEY = "PASTE_YOUR_OPENAI_KEY";
+const API_KEY = "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";
 
 async function sendMessage(){
 
